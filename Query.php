@@ -67,15 +67,15 @@ class Query extends Component implements QueryInterface
      * [always returned as arrays]: http://www.elastic.co/guide/en/elasticsearch/reference/1.x/_return_values.html#_return_values
      * [script field]: http://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-script-fields.html
      *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-stored-fields.html
+     * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-stored-fields.html
      * @see storedFields()
      * @see source
      */
     public $storedFields;
 
-	/**
-	 * @var array the scripted fields being retrieved from the documents.
-	 * Example:
+    /**
+     * @var array the scripted fields being retrieved from the documents.
+     * Example:
      * ```php
      * $query->scriptFields = [
      *     'value_times_two' => [
@@ -89,17 +89,17 @@ class Query extends Component implements QueryInterface
      *     ],
      * ]
      * ```
-	 *
+     *
      * > Note: Field values are [always returned as arrays] even if they only have one value.
-	 *
+     *
      * [always returned as arrays]: http://www.elastic.co/guide/en/elasticsearch/reference/1.x/_return_values.html#_return_values
      * [script field]: http://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-script-fields.html
-	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-script-fields.html
+     *
+     * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-script-fields.html
      * @see scriptFields()
      * @see source
-	 */
-	public $scriptFields;
+     */
+    public $scriptFields;
 
     /**
      * @var array this option controls how the `_source` field is returned from the documents. For example, `['id', 'name']`
@@ -153,6 +153,11 @@ class Query extends Component implements QueryInterface
      * @see http://www.elastic.co/guide/en/elasticsearch/reference/1.x/search-request-highlighting.html
      */
     public $highlight;
+    /**
+     * @var array The collapse part of thise seach query.
+     * @see https://www.elastic.co/guide/en/elasticsearch/reference/5.3/search-request-collapse.html
+     */
+    public $collapse = [];
     /**
      * @var array List of aggregations to add to this query.
      * @see http://www.elastic.co/guide/en/elasticsearch/reference/1.x/search-aggregations.html
@@ -441,6 +446,18 @@ class Query extends Component implements QueryInterface
     }
 
     /**
+     * Adds a collapse to this query.
+     * @param array $options array of parameters to collapse results.
+     * @return $this the query object itself
+     * @see https://www.elastic.co/guide/en/elasticsearch/reference/5.3/search-request-collapse.html
+     */
+    public function addCollapse($options)
+    {
+        $this->collapse = $options;
+        return $this;
+    }
+
+    /**
      * @deprecated since 2.0.5 use addAggragate() instead
      *
      * Adds an aggregation to this query.
@@ -597,14 +614,14 @@ class Query extends Component implements QueryInterface
 
     /**
      * Sets the fields to retrieve from the documents.
-	 * > Quote from the elasticsearch doc:
-	 * > The stored_fields parameter is about fields that are explicitly marked
-	 * > as stored in the mapping, which is off by default and generally not recommended.
-	 * > Use source filtering instead to select subsets of the original source document to be returned.
-	 * 
+     * > Quote from the elasticsearch doc:
+     * > The stored_fields parameter is about fields that are explicitly marked
+     * > as stored in the mapping, which is off by default and generally not recommended.
+     * > Use source filtering instead to select subsets of the original source document to be returned.
+     *
      * @param array $fields the fields to be selected.
      * @return $this the query object itself
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-stored-fields.html
+     * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-stored-fields.html
      */
     public function storedFields($fields)
     {
@@ -620,7 +637,7 @@ class Query extends Component implements QueryInterface
      * Sets the script fields to retrieve from the documents.
      * @param array $fields the fields to be selected.
      * @return $this the query object itself
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-script-fields.html
+     * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-script-fields.html
      */
     public function scriptFields($fields)
     {

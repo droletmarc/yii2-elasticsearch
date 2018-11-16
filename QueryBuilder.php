@@ -77,6 +77,9 @@ class QueryBuilder extends BaseObject
             $parts['query'] = $query->query;
         }
 
+        if (!empty($this->collapse)) {
+            $parts['collapse'] = $query->collapse;
+        }
         if (!empty($query->highlight)) {
             $parts['highlight'] = $query->highlight;
         }
