@@ -1,5 +1,5 @@
 {
-    "name": "yiisoft/yii2-elasticsearch",
+    "name": "droletmarc/yii2-elasticsearch",
     "description": "Elasticsearch integration and ActiveRecord for the Yii framework",
     "keywords": ["yii2", "elasticsearch", "active-record", "search", "fulltext"],
     "type": "yii2-extension",
@@ -23,10 +23,5 @@
     },
     "autoload": {
         "psr-4": { "yii\\elasticsearch\\": "" }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.0.x-dev"
-        }
     }
 }
