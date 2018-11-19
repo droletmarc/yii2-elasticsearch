@@ -154,7 +154,7 @@ class Query extends Component implements QueryInterface
      */
     public $highlight;
     /**
-     * @var array The collapse part of thise seach query.
+     * @var array The collapse part of this seach query.
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/5.3/search-request-collapse.html
      */
     public $collapse = [];
@@ -451,7 +451,7 @@ class Query extends Component implements QueryInterface
      * @return $this the query object itself
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/5.3/search-request-collapse.html
      */
-    public function addCollapse($options)
+    public function addCollapse(array $options)
     {
         $this->collapse = $options;
         return $this;

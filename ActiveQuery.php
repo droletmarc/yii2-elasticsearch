@@ -287,8 +287,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      */
     public function search($db = null, $options = [])
     {
-        $command = $this->createCommand($db);
-        $result = $command->search($options);
+        $result = $this->createCommand($db)->search($options);
         if ($result === false) {
             throw new Exception('Elasticsearch search query failed.', [
                 'index' => $command->index,
@@ -297,6 +296,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
                 'options' => $command->options,
             ]);
         }
+
         // TODO implement with() for asArray
         if (!empty($result['hits']['hits']) && !$this->asArray) {
             $models = $this->createModels($result['hits']['hits']);
@@ -308,6 +308,48 @@ class ActiveQuery extends Query implements ActiveQueryInterface
             }
             $result['hits']['hits'] = $models;
         }
+
+        return $result;
+    }
+
+    /**
+     * Executes the query and returns the complete search result including e.g. hits, facets, totalCount.
+     * @param string $collapseName The name of the collapse to use from the result.
+     * @param string The aggregation name to use for the total, based on the collapse field.
+     * @param Connection $db the database connection used to execute the query.
+     * If this parameter is not given, the `elasticsearch` application component will be used.
+     * @param array $options The options given with this query. Possible options are:
+     *
+     *  - [routing](http://www.elastic.co/guide/en/elasticsearch/reference/current/search.html#search-routing)
+     *  - [search_type](http://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-search-type.html)
+     *
+     * @return array the query results.
+     */
+    public function searchCollapse($collapseName, $aggregationTotalName = 'total', $db = null, $options = [])
+    {
+        $result = $this->createCommand($db)->search($options);
+        // TODO implement with() for asArray
+        if (!empty($result['hits']['hits'][0]['inner_hits'][$collapseName]['hits']['hits']) && !$this->asArray) {
+            $hits = [];
+            foreach ($result['hits']['hits'] as $innerHits) {
+                $hits[] = $innerHits['inner_hits'][$collapseName]['hits']['hits'][0];
+            }
+
+            if ($this->asArray) {
+                $result['hits']['hits'] = $hits;
+            } else {
+                $models = $this->createModels($hits);
+                if (!empty($this->with)) {
+                    $this->findWith($this->with, $models);
+                }
+                foreach ($models as $model) {
+                    $model->afterFind();
+                }
+                $result['hits']['hits'] = $models;
+            }
+        }
+
+        $result['hits']['total'] = $result['aggregations'][$aggregationTotalName]['value'];
 
         return $result;
     }
@@ -325,6 +367,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
             if ($result === false) {
                 throw new Exception('Elasticsearch search query failed.');
             }
+
             if (empty($result['hits']['hits'])) {
                 return [];
             }
